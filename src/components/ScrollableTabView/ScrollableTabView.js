@@ -187,14 +187,15 @@ class ScrollableTabView extends React.Component {
     const {width} = e.nativeEvent.layout
     const {containerWidth, currentPage} = this.state
 
+    requestAnimationFrame(() => {
+      this.goToPage(currentPage)
+    })
+
     if (!width || width <= 0 || Math.round(width) === Math.round(containerWidth)) {
       return
     }
 
     this.setState({containerWidth: width})
-    requestAnimationFrame(() => {
-      this.goToPage(currentPage)
-    })
   }
 
   children = (children = this.props.children) => React.Children.map(children, (child) => child)
