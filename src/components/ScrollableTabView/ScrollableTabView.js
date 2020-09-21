@@ -13,10 +13,10 @@ const styles = StyleSheet.create({
 })
 
 const {deviceWidth} = constants
-const firstLayoutDone = false;
 
 class ScrollableTabView extends React.Component {
   scrollOnMountCalled = false
+  firstLayoutDone = false;
 
   constructor(props) {
     super(props)
@@ -188,8 +188,9 @@ class ScrollableTabView extends React.Component {
     const {width} = e.nativeEvent.layout
     const {containerWidth, currentPage} = this.state
 
-    if(!firstLayoutDone) {
+    if(!this.firstLayoutDone) {
       this.goToPage(currentPage)
+      this.firstLayoutDone = true;
     }
 
     if (!width || width <= 0 || Math.round(width) === Math.round(containerWidth)) {
