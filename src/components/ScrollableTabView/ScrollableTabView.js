@@ -13,6 +13,7 @@ const styles = StyleSheet.create({
 })
 
 const {deviceWidth} = constants
+const firstLayoutDone = false;
 
 class ScrollableTabView extends React.Component {
   scrollOnMountCalled = false
@@ -187,15 +188,18 @@ class ScrollableTabView extends React.Component {
     const {width} = e.nativeEvent.layout
     const {containerWidth, currentPage} = this.state
 
-    requestAnimationFrame(() => {
+    if(!firstLayoutDone) {
       this.goToPage(currentPage)
-    })
+    }
 
     if (!width || width <= 0 || Math.round(width) === Math.round(containerWidth)) {
       return
     }
 
     this.setState({containerWidth: width})
+    requestAnimationFrame(() => {
+      this.goToPage(currentPage)
+    })
   }
 
   children = (children = this.props.children) => React.Children.map(children, (child) => child)
