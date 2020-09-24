@@ -323,6 +323,7 @@ class StickyParallaxHeader extends Component {
       keyboardShouldPersistTaps,
       scrollRef,
       refreshControl,
+      contentContainerStyles
     } = this.props;
     const { currentPage, isFolded } = this.state;
     const scrollHeight = Math.max(parallaxHeight, headerHeight * 2);
