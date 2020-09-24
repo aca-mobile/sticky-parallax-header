@@ -1,6 +1,27 @@
 import React, { Component } from 'react';
-import { arrayOf, bool, func, node, number, oneOfType, shape, string } from 'prop-types';
-import { Animated, Dimensions, Easing, Image, ImageBackground, ScrollView, View, ViewPropTypes } from 'react-native';
+import {
+  arrayOf,
+  bool,
+  func,
+  node,
+  number,
+  shape,
+  string,
+  oneOfType,
+  oneOf,
+  instanceOf,
+  element,
+} from 'prop-types';
+import {
+  Dimensions,
+  ImageBackground,
+  ScrollView,
+  View,
+  Animated,
+  Easing,
+  ViewPropTypes,
+  Image,
+} from 'react-native';
 import { ScrollableTabBar, ScrollableTabView } from './components';
 import { constants } from './constants';
 import styles from './styles';

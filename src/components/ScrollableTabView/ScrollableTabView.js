@@ -1,10 +1,10 @@
 /* eslint-disable react/destructuring-assignment  */
-import React from 'react'
-import {Animated, StyleSheet, View} from 'react-native'
-import {bool, func, node, number, shape} from 'prop-types'
-import SceneComponent from './SceneComponent'
-import constants from '../../constants/constants'
-import {getSafelyScrollNode} from '../../utils'
+import React from 'react';
+import { Animated, StyleSheet, View, ViewPropTypes } from 'react-native';
+import { func, node, number, oneOf } from 'prop-types';
+import SceneComponent from './SceneComponent';
+import constants from '../../constants/constants';
+import { getSafelyScrollNode } from '../../utils';
 
 const styles = StyleSheet.create({
   container: {
