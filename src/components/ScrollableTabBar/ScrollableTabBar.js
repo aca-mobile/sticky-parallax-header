@@ -36,7 +36,8 @@ class ScrollableTabBar extends React.PureComponent {
 
   adjustNext = (page) => {
     // eslint-disable-next-line max-len
-    const invisibleX = constants.deviceWidth + this.currentXPosition - constants.deviceWidth * 0.3 * (page + 1);
+    const invisibleX =
+      constants.deviceWidth + this.currentXPosition - constants.deviceWidth * 0.3 * (page + 1);
 
     if (invisibleX < 0) {
       this.currentXPosition = this.currentXPosition - invisibleX;
@@ -133,7 +134,12 @@ class ScrollableTabBar extends React.PureComponent {
                 accessibilityTraits="button"
                 activeOpacity={0.9}
                 onPress={() => this.goToPage(page)}>
-                <View style={[styles.tabContainer, tabTextContainerStyle, isTabActive && tabTextContainerActiveStyle]}>
+                <View
+                  style={[
+                    styles.tabContainer,
+                    tabTextContainerStyle,
+                    isTabActive && tabTextContainerActiveStyle,
+                  ]}>
                   <Text
                     // eslint-disable-next-line no-return-assign
                     onLayout={({

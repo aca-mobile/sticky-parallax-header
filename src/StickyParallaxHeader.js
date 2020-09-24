@@ -4,7 +4,7 @@ import { Animated, Dimensions, Easing, Image, ImageBackground, ScrollView, View,
 import { ScrollableTabBar, ScrollableTabView } from './components';
 import { constants } from './constants';
 import styles from './styles';
-import { getSafelyScrollNode } from './utils';
+import { getSafelyScrollNode, setRef } from './utils';
 
 const { divide, Value, createAnimatedComponent, event, timing, ValueXY } = Animated;
 const AnimatedScrollView = createAnimatedComponent(ScrollView);
@@ -32,7 +32,7 @@ class StickyParallaxHeader extends Component {
 
   componentDidMount() {
     // eslint-disable-next-line
-    this.scrollY.addListener(({value}) => (this._value = value))
+    this.scrollY.addListener(({value}) => (this._value = value));
     this.props.onRef?.(this);
   }
 
@@ -78,10 +78,9 @@ class StickyParallaxHeader extends Component {
     const { snapStartThreshold, snapStopThreshold, snapValue } = this.props;
     const scrollHeight = snapStopThreshold || height;
     const snap = snapValue || height;
-    const { snapToEdge } = this.props;
+    const { snapToEdge, refreshControl } = this.props;
 
     const scrollNode = getSafelyScrollNode(this.scroll);
-    // eslint-disable-next-line no-underscore-dangle
     const scrollValue = this.scrollY.__getValue();
     const { y } = scrollValue;
     const snapToEdgeAnimatedValue = new ValueXY(scrollValue);
@@ -90,50 +89,48 @@ class StickyParallaxHeader extends Component {
       scrollNode.scrollTo({ x: 0, y: value.y, animated: false });
     });
 
-    if (y < -20 && !constants.isAndroid) {
-      this.spring(y);
-    }
+    if (y < -20 && !constants.isAndroid && !refreshControl) this.spring(y);
 
     if (snapToEdge) {
       if (y > 0 && y < snapToEdgeThreshold) {
         return constants.isAndroid
           ? this.setState(
-            {
-              isFolded: false,
-            },
-            scrollNode.scrollTo({ x: 0, y: 0, animated: true }),
-          )
+              {
+                isFolded: false,
+              },
+              scrollNode.scrollTo({ x: 0, y: 0, animated: true }),
+            )
           : timing(snapToEdgeAnimatedValue, {
-            toValue: { x: 0, y: 0 },
-            duration: 400,
-            easing: Easing.out(Easing.cubic),
-            useNativeDriver: true,
-          }).start(() => {
-            snapToEdgeAnimatedValue.removeListener(id);
-            this.setState({
-              isFolded: false,
+              toValue: { x: 0, y: 0 },
+              duration: 400,
+              easing: Easing.out(Easing.cubic),
+              useNativeDriver: true,
+            }).start(() => {
+              snapToEdgeAnimatedValue.removeListener(id);
+              this.setState({
+                isFolded: false,
+              });
             });
-          });
       }
       if (y >= snapToEdgeThreshold && y < scrollHeight) {
         return constants.isAndroid
           ? this.setState(
-            {
-              isFolded: true,
-            },
-            scrollNode.scrollTo({ x: 0, y: scrollHeight, animated: true }),
-          )
+              {
+                isFolded: true,
+              },
+              scrollNode.scrollTo({ x: 0, y: scrollHeight, animated: true }),
+            )
           : timing(snapToEdgeAnimatedValue, {
-            toValue: { x: 0, y: snap },
-            duration: 400,
-            easing: Easing.out(Easing.cubic),
-            useNativeDriver: true,
-          }).start(() => {
-            snapToEdgeAnimatedValue.removeListener(id);
-            this.setState({
-              isFolded: true,
+              toValue: { x: 0, y: snap },
+              duration: 400,
+              easing: Easing.out(Easing.cubic),
+              useNativeDriver: true,
+            }).start(() => {
+              snapToEdgeAnimatedValue.removeListener(id);
+              this.setState({
+                isFolded: true,
+              });
             });
-          });
       }
     }
 
@@ -301,7 +298,11 @@ class StickyParallaxHeader extends Component {
   };
 
   render() {
-    const { backgroundImage, children, header, headerHeight, initialPage, parallaxHeight, tabs, bounces, scrollEvent } = this.props;
+    const { backgroundImage, children, header, headerHeight, initialPage, parallaxHeight, tabs, bounces, scrollEvent,
+      keyboardShouldPersistTaps,
+      scrollRef,
+      refreshControl,
+    } = this.props;
     const { currentPage, isFolded } = this.state;
     const scrollHeight = Math.max(parallaxHeight, headerHeight * 2);
     const headerStyle = header.props.style;
@@ -315,6 +316,7 @@ class StickyParallaxHeader extends Component {
     const innerScrollHeight = Dimensions.get('window').height - headerHeight - parallaxHeight;
 
     const shouldRenderTabs = tabs && tabs.length > 0;
+    const shouldUseBgColor = contentContainerStyles && contentContainerStyles.backgroundColor;
 
     return (
       <View style={styles.container}>
@@ -322,18 +324,24 @@ class StickyParallaxHeader extends Component {
         <AnimatedScrollView
           bounces={bounces}
           overScrollMode="never"
+          refreshControl={refreshControl}
           bouncesZoom
           decelerationRate="fast"
           nestedScrollEnabled
           ref={(c) => {
             this.scroll = c;
+            setRef(scrollRef, c);
           }}
-          contentContainerStyle={{ minHeight: scrollViewMinHeight }}
+          contentContainerStyle={{
+            minHeight: scrollViewMinHeight,
+            backgroundColor: shouldUseBgColor,
+          }}
           onScrollEndDrag={() => this.onScrollEndSnapToEdge(scrollHeight)}
           onMomentumScrollEnd={() => this.onScrollEndSnapToEdge(scrollHeight)}
           scrollEventThrottle={16}
           stickyHeaderIndices={shouldRenderTabs ? [1] : []}
           showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps={keyboardShouldPersistTaps}
           onScroll={event(
             [
               {
@@ -375,19 +383,20 @@ class StickyParallaxHeader extends Component {
             scrollRef={this.scroll}
             scrollHeight={scrollHeight}
             isHeaderFolded={isFolded}
-            minScrollHeight={innerScrollHeight}>
+            minScrollHeight={innerScrollHeight}keyboardShouldPersistTaps={keyboardShouldPersistTaps}>
             {!tabs && children}
             {tabs &&
-            tabs.map((item) => (
-              <View
-                tabLabel={item.title}
-                key={item.title}
-                ref={(c) => {
-                  this.tab = c;
-                }}>
-                {item.content}
-              </View>
-            ))}
+              tabs.map((item) => (
+                <View
+                  tabLabel={item.title}
+                  key={item.title}
+                  onLayout={this.setContentHeight}
+                  ref={(c) => {
+                    this.tab = c;
+                  }}>
+                  {item.content}
+                </View>
+              ))}
           </ScrollableTabView>
         </AnimatedScrollView>
       </View>
@@ -426,6 +435,9 @@ StickyParallaxHeader.propTypes = {
   transparentHeader: bool,
   onRef: func,
   onTopReached: func,
+  scrollRef: oneOfType([func, shape({ current: instanceOf(ScrollView) })]),
+  keyboardShouldPersistTaps: oneOf(['never', 'always', 'handled', false, true, undefined]),
+  refreshControl: element,
 };
 
 StickyParallaxHeader.defaultProps = {
@@ -446,6 +458,9 @@ StickyParallaxHeader.defaultProps = {
   snapValue: false,
   transparentHeader: false,
   onRef: null,
+  scrollRef: null,
+  keyboardShouldPersistTaps: undefined,
+  refreshControl: undefined,
 };
 
 export default StickyParallaxHeader;
