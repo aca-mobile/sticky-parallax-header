@@ -37,6 +37,7 @@ export interface SharedProps {
   headerHeight?: number;
   snapToEdge?: boolean;
   bounces?: boolean;
+  onRef?: (ref: StickyParallaxHeader) => void;
 }
 
 export interface IconProps {
