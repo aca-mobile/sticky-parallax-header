@@ -124,6 +124,7 @@ export type CustomHeaderProps = SharedProps &
     snapValue?: number;
     tabsContainerBackgroundColor?: string;
     transparentHeader?: boolean;
+    extraHeightReduction?: number;
   };
 
 type StickyParallaxHeaderProps = HeaderTypeProp &

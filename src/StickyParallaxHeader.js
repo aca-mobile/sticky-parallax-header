@@ -333,6 +333,7 @@ class StickyParallaxHeader extends Component {
       keyboardShouldPersistTaps,
       scrollRef,
       refreshControl,
+      extraHeightReduction,
     } = this.props;
     const { currentPage, isFolded } = this.state;
     const scrollHeight = Math.max(parallaxHeight, headerHeight * 2);
@@ -343,7 +344,7 @@ class StickyParallaxHeader extends Component {
       headerStyle.map((el) => Object.assign(arrayHeaderStyle, el));
     }
 
-    const scrollViewMinHeight = Dimensions.get('window').height + parallaxHeight - headerHeight;
+    const scrollViewMinHeight = Dimensions.get('window').height + parallaxHeight - headerHeight - extraHeightReduction;
     const innerScrollHeight = Dimensions.get('window').height - headerHeight - parallaxHeight;
 
     const shouldRenderTabs = tabs && tabs.length > 0;
@@ -469,6 +470,7 @@ StickyParallaxHeader.propTypes = {
   scrollRef: oneOfType([func, shape({ current: instanceOf(ScrollView) })]),
   keyboardShouldPersistTaps: oneOf(['never', 'always', 'handled', false, true, undefined]),
   refreshControl: element,
+  extraHeightReduction: number,
 };
 
 StickyParallaxHeader.defaultProps = {
@@ -492,6 +494,7 @@ StickyParallaxHeader.defaultProps = {
   scrollRef: null,
   keyboardShouldPersistTaps: undefined,
   refreshControl: undefined,
+  extraHeightReduction: 0
 };
 
 export default StickyParallaxHeader;
