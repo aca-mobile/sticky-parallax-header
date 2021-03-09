@@ -345,7 +345,7 @@ class StickyParallaxHeader extends Component {
     }
 
     const scrollViewMinHeight = Dimensions.get('window').height + parallaxHeight - headerHeight - extraHeightReduction;
-    const innerScrollHeight = Dimensions.get('window').height - headerHeight - parallaxHeight;
+    const innerScrollHeight = Dimensions.get('window').height - headerHeight - parallaxHeight - extraHeightReduction;
 
     const shouldRenderTabs = tabs && tabs.length > 0;
     const shouldUseBgColor = contentContainerStyles && contentContainerStyles.backgroundColor;
